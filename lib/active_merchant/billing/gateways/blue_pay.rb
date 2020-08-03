@@ -44,8 +44,8 @@ module ActiveMerchant #:nodoc:
         'CUST_TOKEN' => :cust_token
       }
 
-      self.supported_countries = ['US', 'CA']
-      self.supported_cardtypes = [:visa, :master, :american_express, :discover, :diners_club, :jcb]
+      self.supported_countries = %w[US CA]
+      self.supported_cardtypes = %i[visa master american_express discover diners_club jcb]
       self.homepage_url        = 'http://www.bluepay.com/'
       self.display_name        = 'BluePay'
       self.money_format        = :dollars

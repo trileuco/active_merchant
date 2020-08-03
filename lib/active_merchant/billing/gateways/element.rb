@@ -9,7 +9,7 @@ module ActiveMerchant #:nodoc:
 
       self.supported_countries = ['US']
       self.default_currency = 'USD'
-      self.supported_cardtypes = [:visa, :master, :american_express, :discover, :diners_club, :jcb]
+      self.supported_cardtypes = %i[visa master american_express discover diners_club jcb]
 
       self.homepage_url = 'http://www.elementps.com'
       self.display_name = 'Element'
@@ -53,7 +53,7 @@ module ActiveMerchant #:nodoc:
       end
 
       def capture(money, authorization, options={})
-        trans_id, _ = split_authorization(authorization)
+        trans_id, = split_authorization(authorization)
         options[:trans_id] = trans_id
 
         request = build_soap_request do |xml|
@@ -68,7 +68,7 @@ module ActiveMerchant #:nodoc:
       end
 
       def refund(money, authorization, options={})
-        trans_id, _ = split_authorization(authorization)
+        trans_id, = split_authorization(authorization)
         options[:trans_id] = trans_id
 
         request = build_soap_request do |xml|

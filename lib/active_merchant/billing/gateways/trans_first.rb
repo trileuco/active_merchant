@@ -5,7 +5,7 @@ module ActiveMerchant #:nodoc:
       self.live_url = 'https://webservices.primerchants.com'
 
       self.supported_countries = ['US']
-      self.supported_cardtypes = [:visa, :master, :american_express, :discover]
+      self.supported_cardtypes = %i[visa master american_express discover]
       self.homepage_url = 'http://www.transfirst.com/'
       self.display_name = 'TransFirst'
 
@@ -60,7 +60,7 @@ module ActiveMerchant #:nodoc:
       def void(authorization, options={})
         post = {}
 
-        transaction_id, _ = split_authorization(authorization)
+        transaction_id, = split_authorization(authorization)
         add_pair(post, :TransID, transaction_id)
 
         commit(:void, post)

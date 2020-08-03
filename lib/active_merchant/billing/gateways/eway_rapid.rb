@@ -7,8 +7,8 @@ module ActiveMerchant #:nodoc:
       self.live_url = 'https://api.ewaypayments.com/'
 
       self.money_format = :cents
-      self.supported_countries = ['AU', 'NZ', 'GB', 'SG', 'MY', 'HK']
-      self.supported_cardtypes = [:visa, :master, :american_express, :diners_club, :jcb]
+      self.supported_countries = %w[AU NZ GB SG MY HK]
+      self.supported_cardtypes = %i[visa master american_express diners_club jcb]
       self.homepage_url = 'http://www.eway.com.au/'
       self.display_name = 'eWAY Rapid 3.1'
       self.default_currency = 'AUD'

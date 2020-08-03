@@ -44,7 +44,7 @@ module ActiveMerchant #:nodoc:
       self.money_format        = :cents
 
       # Not all card types may be activated by the bank!
-      self.supported_cardtypes = [:visa, :master, :american_express, :jcb, :diners_club, :unionpay]
+      self.supported_cardtypes = %i[visa master american_express jcb diners_club unionpay]
       self.homepage_url        = 'http://www.redsys.es/'
       self.display_name        = 'Redsys'
 
@@ -225,7 +225,7 @@ module ActiveMerchant #:nodoc:
         data = {}
         add_action(data, :capture)
         add_amount(data, money, options)
-        order_id, _, _ = split_authorization(authorization)
+        order_id, = split_authorization(authorization)
         add_order(data, order_id)
         data[:description] = options[:description]
 
@@ -247,7 +247,7 @@ module ActiveMerchant #:nodoc:
         data = {}
         add_action(data, :refund)
         add_amount(data, money, options)
-        order_id, _, _ = split_authorization(authorization)
+        order_id, = split_authorization(authorization)
         add_order(data, order_id)
         data[:description] = options[:description]
 
@@ -480,7 +480,7 @@ module ActiveMerchant #:nodoc:
           else
             message = 'Response failed validation check'
           end
-        elsif ['iniciaPeticion', 'trataPeticion'].include?(action)
+        elsif %w[iniciaPeticion trataPeticion].include?(action)
           vxml = Nokogiri::XML(data).remove_namespaces!.xpath("//Envelope/Body/#{action}Response/#{action}Return").inner_text
           xml = Nokogiri::XML(vxml)
           node = (action == 'iniciaPeticion' ? 'INFOTARJETA' : 'OPERACION')

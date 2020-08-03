@@ -8,7 +8,7 @@ module ActiveMerchant #:nodoc:
 
       self.supported_countries = ['US']
       self.default_currency = 'USD'
-      self.supported_cardtypes = [:visa, :master, :american_express, :discover]
+      self.supported_cardtypes = %i[visa master american_express discover]
       self.money_format = :cents
 
       self.homepage_url = 'https://digitzs.com'
@@ -235,7 +235,7 @@ module ActiveMerchant #:nodoc:
 
       def authorization_from(response)
         if customer_id = response.try(:[], 'data').try(:[], 'attributes').try(:[], 'customerId')
-          "#{customer_id}|#{response.try(:[], "data").try(:[], "id")}"
+          "#{customer_id}|#{response.try(:[], 'data').try(:[], 'id')}"
         else
           response.try(:[], 'data').try(:[], 'id')
         end

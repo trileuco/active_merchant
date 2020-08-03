@@ -11,7 +11,7 @@ module ActiveMerchant
       self.money_format = :cents
       self.supported_countries = %w(US CA)
 
-      self.supported_cardtypes = [:visa, :master, :american_express, :discover, :jcb, :diners_club]
+      self.supported_cardtypes = %i[visa master american_express discover jcb diners_club]
 
       self.homepage_url = 'https://developer.payeezy.com/'
       self.display_name = 'Payeezy'
@@ -136,7 +136,7 @@ module ActiveMerchant
       end
 
       def add_authorization_info(params, authorization, options = {})
-        transaction_id, transaction_tag, method, _ = authorization.split('|')
+        transaction_id, transaction_tag, method, = authorization.split('|')
         params[:method] = method == 'token' ? 'credit_card' : method
 
         if options[:reversal_id]
