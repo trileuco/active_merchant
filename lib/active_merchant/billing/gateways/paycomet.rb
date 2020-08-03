@@ -594,16 +594,7 @@ module ActiveMerchant #:nodoc:
 
       def commit(data)
         action = data[:action]
-        parse(ssl_post(url, xml_request_from(data), headers(action)), action)
-      end
-
-      def xml_request_from(data)
-        xml = merchant_data_xml(data)
-        puts "#####################"
-        puts "Request:"
-        puts xml
-        puts "#####################"
-        xml
+        parse(ssl_post(url, merchant_data_xml(data), headers(action)), action)
       end
 
       def headers(action=nil)
@@ -691,11 +682,6 @@ module ActiveMerchant #:nodoc:
         xml     = Nokogiri::XML(data)
         code = xml.xpath("//SOAP-ENV:Envelope/SOAP-ENV:Body/SOAP-ENV:#{action}Response/DS_ERROR_ID").text
         message = response_text(code.to_i)
-        puts "#####################"
-        puts "Response message: " + code + " -> " + message
-        puts xml
-        puts "#####################"
-
 
         if code == '0'
           success = true
