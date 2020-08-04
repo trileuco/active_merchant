@@ -611,22 +611,22 @@ module ActiveMerchant #:nodoc:
       end
 
       def build_signature(data)
-        str = if [:execute_purchase, :create_preauthorization].include?(data[:action])
-          @options[:login] + data[:user_id] + data[:credit_card_token] + @options[:terminal] + data[:amount] + data[:order_id] + @options[:secret_key]
+        tokens = if [:execute_purchase, :create_preauthorization].include?(data[:action])
+          [@options[:login], data[:user_id], data[:credit_card_token], @options[:terminal], data[:amount], data[:order_id], @options[:secret_key]]
         elsif [:preauthorization_confirm, :preauthorization_cancel].include?(data[:action])
-          @options[:login] + data[:user_id] + data[:credit_card_token] + @options[:terminal] + data[:order_id] + data[:amount] + @options[:secret_key]
+          [@options[:login], data[:user_id], data[:credit_card_token], @options[:terminal], data[:order_id], data[:amount], @options[:secret_key]]
         elsif :execute_refund == data[:action]
-          @options[:login] + data[:user_id] + data[:credit_card_token] + @options[:terminal] + data[:auth_code] + data[:order_id] + @options[:secret_key]
+          [@options[:login], data[:user_id], data[:credit_card_token], @options[:terminal], data[:auth_code], data[:order_id], @options[:secret_key]]
         elsif :add_user == data[:action]
-          @options[:login] + data[:card][:pan] + data[:card][:cvv] + @options[:terminal] + @options[:secret_key]
+          [@options[:login], data[:card][:pan], data[:card][:cvv], @options[:terminal], @options[:secret_key]]
         elsif :add_user_token == data[:action]
-           @options[:login] + data[:jet_token] + @options[:jet_id] + @options[:terminal] + @options[:secret_key]
+           [@options[:login], data[:jet_token], @options[:jet_id], @options[:terminal], @options[:secret_key]]
         elsif [:info_user, :remove_user].include?(data[:action])
-          @options[:login] + data[:user_id] + data[:credit_card_token] + @options[:terminal] + @options[:secret_key]
+          [@options[:login], data[:user_id], data[:credit_card_token], @options[:terminal], @options[:secret_key]]
         else
-          ""
+          []
         end
-        Digest::SHA512.hexdigest(str)
+        Digest::SHA512.hexdigest(tokens.join)
       end
 
       def merchant_data_xml(data)
