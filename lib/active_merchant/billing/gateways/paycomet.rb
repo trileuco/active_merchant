@@ -594,16 +594,7 @@ module ActiveMerchant #:nodoc:
 
       def commit(data)
         action = data[:action]
-        parse(ssl_post(url, xml_request_from(data), headers(action)), action)
-      end
-
-      def xml_request_from(data)
-        xml = merchant_data_xml(data)
-        puts "#####################"
-        puts "Request:"
-        puts xml
-        puts "#####################"
-        xml
+        parse(ssl_post(url, merchant_data_xml(data), headers(action)), action)
       end
 
       def headers(action=nil)
@@ -620,22 +611,22 @@ module ActiveMerchant #:nodoc:
       end
 
       def build_signature(data)
-        str = if [:execute_purchase, :create_preauthorization].include?(data[:action])
-          @options[:login] + data[:user_id] + data[:credit_card_token] + @options[:terminal] + data[:amount] + data[:order_id] + @options[:secret_key]
+        tokens = if [:execute_purchase, :create_preauthorization].include?(data[:action])
+          [@options[:login], data[:user_id], data[:credit_card_token], @options[:terminal], data[:amount], data[:order_id], @options[:secret_key]]
         elsif [:preauthorization_confirm, :preauthorization_cancel].include?(data[:action])
-          @options[:login] + data[:user_id] + data[:credit_card_token] + @options[:terminal] + data[:order_id] + data[:amount] + @options[:secret_key]
+          [@options[:login], data[:user_id], data[:credit_card_token], @options[:terminal], data[:order_id], data[:amount], @options[:secret_key]]
         elsif :execute_refund == data[:action]
-          @options[:login] + data[:user_id] + data[:credit_card_token] + @options[:terminal] + data[:auth_code] + data[:order_id] + @options[:secret_key]
+          [@options[:login], data[:user_id], data[:credit_card_token], @options[:terminal], data[:auth_code], data[:order_id], @options[:secret_key]]
         elsif :add_user == data[:action]
-          @options[:login] + data[:card][:pan] + data[:card][:cvv] + @options[:terminal] + @options[:secret_key]
+          [@options[:login], data[:card][:pan], data[:card][:cvv], @options[:terminal], @options[:secret_key]]
         elsif :add_user_token == data[:action]
-           @options[:login] + data[:jet_token] + @options[:jet_id] + @options[:terminal] + @options[:secret_key]
+           [@options[:login], data[:jet_token], @options[:jet_id], @options[:terminal], @options[:secret_key]]
         elsif [:info_user, :remove_user].include?(data[:action])
-          @options[:login] + data[:user_id] + data[:credit_card_token] + @options[:terminal] + @options[:secret_key]
+          [@options[:login], data[:user_id], data[:credit_card_token], @options[:terminal], @options[:secret_key]]
         else
-          ""
+          []
         end
-        Digest::SHA512.hexdigest(str)
+        Digest::SHA512.hexdigest(tokens.join)
       end
 
       def merchant_data_xml(data)
@@ -691,11 +682,6 @@ module ActiveMerchant #:nodoc:
         xml     = Nokogiri::XML(data)
         code = xml.xpath("//SOAP-ENV:Envelope/SOAP-ENV:Body/SOAP-ENV:#{action}Response/DS_ERROR_ID").text
         message = response_text(code.to_i)
-        puts "#####################"
-        puts "Response message: " + code + " -> " + message
-        puts xml
-        puts "#####################"
-
 
         if code == '0'
           success = true
